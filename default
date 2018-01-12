@@ -1,0 +1,25 @@
+server {
+    listen 81 default_server;
+    listen [::]:81 default_server;
+
+    server_name _;
+
+    location /allure {
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+        # First attempt to serve request as file, then
+        # as directory, then fall back to displaying a 404.
+        try_files $uri $uri/ =404;
+    }
+
+    location / {
+            real_ip_header X-Forwarded-For;
+            set_real_ip_from 0.0.0.0/0;
+            allow all;
+
+            proxy_pass  http://localhost:8888/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
